@@ -36,6 +36,7 @@
 #include <memory>
 #include <functional>
 #include <inttypes.h>
+#define GASHACK
 
 struct enum_field_t {
     std::string name;
@@ -262,7 +263,11 @@ bool cps_class_attr_is_embedded(const cps_api_attr_id_t *ids, size_t ids_len) {
     cps_class_map_node_details_int_t *p = nullptr;
     _key_to_map_element.find(&key,p,true);
 
+#ifdef GASHACK
+    if (p==nullptr) return false;
+#else
     if (p==nullptr) return nullptr;
+#endif
 
     return p->embedded;
 }
