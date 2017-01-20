@@ -303,6 +303,9 @@ void cps_api_metadata_import(void) {
     _prioritized_file_list _files;
 
     const char *_dir = std_getenv(CPS_API_METADATA_ENV);
+    const int CPS_MAX_DIR_SIZE = 256;
+    char str[CPS_MAX_DIR_SIZE];
+    char *paths = CPS_DEF_META_SEARCH_PATHS;
 
     //iterate over any environment directories
     if (_dir!=nullptr) {
@@ -313,7 +316,12 @@ void cps_api_metadata_import(void) {
     }
 
     ///TODO erg.. in a transition where the software will be moving to OPX soon - and then this should be /etc/opx/cpsmetadata
-    auto _search_path = cps_string::split(CPS_DEF_META_SEARCH_PATHS,":");
+    if (getenv("OPX_INSTALL_PATH")) {
+        snprintf(str, CPS_MAX_DIR_SIZE, "%s%s:%s%s", getenv("OPX_INSTALL_PATH"), 
+            CPS_DEF_SEARCH_PATH, getenv("OPX_INSTALL_PATH"), CPS_DEF_SEARCH_PATH_CFG ); 
+        paths = str; 
+    }
+    auto _search_path = cps_string::split(paths,":");
     for (auto &__dir : _search_path ) {
         std_dir_iterate((__dir+ "/cpsmetadata").c_str(),__cb,&_files,true);
     }
